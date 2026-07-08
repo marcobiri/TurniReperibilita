@@ -41,6 +41,14 @@ function inizializzaCalendario() {
         firstDay: 1,
         height: "auto",
         headerToolbar: {left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek"},
+        // I turni notturni finiscono alle 08:00 del giorno dopo: senza questa soglia FullCalendar
+        // li tratterebbe come eventi multi-giorno, disegnandoli come barre che si estendono nella
+        // cella successiva e, con notti consecutive, si incatenano ripetendo il nome del turno.
+        nextDayThreshold: "09:00:00",
+        // Confinare i turni notturni al proprio giorno li farebbe passare allo stile "list-item"
+        // (pallino + testo, senza sfondo) che FullCalendar usa di default per gli eventi di un solo
+        // giorno: forziamo lo stile "block" per mantenere la barra colorata anche in vista mese.
+        eventDisplay: "block",
         eventOrder: (a, b) => (a.servizio === b.servizio ? 0 : a.servizio === "REPERIBILITA" ? -1 : 1),
         events: caricaEventi,
         dateClick: (info) => apriModaleCreazione(info.dateStr),
