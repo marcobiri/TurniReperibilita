@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' - Reperibilita'">Reperibilita</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { background: white; }
+
+        .foglio-centralino {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #111;
+        }
+
+        .logo-centralino { display: block; margin: 0 auto 0.75rem; max-height: 70px; }
+
+        .riga-intestazione {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 1rem;
+            margin-bottom: 0.3rem;
+        }
+        .servizio-nome { font-weight: bold; font-size: 0.95rem; }
+        .oggetto { font-weight: bold; font-size: 0.95rem; }
+        .titolo-centralino { font-weight: bold; font-size: 0.95rem; white-space: nowrap; }
+
+        .testo-esplicativo { font-size: 0.68rem; line-height: 1.2; margin-bottom: 0.5rem; }
+
+        table.tabella-centralino {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.66rem;
+        }
+        table.tabella-centralino th, table.tabella-centralino td {
+            border: 1px solid #000;
+            padding: 0.08rem 0.35rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+        table.tabella-centralino th { text-align: center; font-weight: bold; padding: 0.15rem 0.35rem; }
+        tr.riga-festiva td { font-weight: bold; }
+        tr.riga-spaziatrice td { border: none; padding: 0.08rem 0; }
+
+        .firma-centralino {
+            margin-top: 1rem;
+            text-align: right;
+            padding-right: 1.5rem;
+        }
+        .spazio-firma {
+            display: inline-block;
+            width: 220px;
+            height: 1.3rem;
+            border-bottom: 1px solid #000;
+        }
+        .riga-firma {
+            font-weight: bold;
+            font-size: 0.75rem;
+            margin-top: 0.2rem;
+        }
+
+        @page {
+            size: A4;
+            margin: 0.9cm;
+        }
+
+        @media print {
+            .no-stampa { display: none !important; }
+            body { background: white; }
+            .foglio-centralino { max-width: 100%; padding: 0; }
+            table.tabella-centralino thead { display: table-header-group; }
+            tr { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+<div class="no-stampa">
+    <main style="padding-bottom: 0">
+        <div class="card">
+            <div class="toolbar">
+                <div>
+                    <label for="pMese">Mese</label>
+                    <select id="pMese"></select>
+                </div>
+                <div>
+                    <label for="pAnno">Anno</label>
+                    <select id="pAnno"></select>
+                </div>
+                <div class="spacer"></div>
+                <div>
+                    <label>&nbsp;</label>
+                    <button class="btn secondario" id="btnAggiorna">Aggiorna elenco</button>
+                </div>
+                <div>
+                    <label>&nbsp;</label>
+                    <button class="btn" id="btnStampa">Stampa / Salva PDF</button>
+                </div>
+                <div>
+                    <label>&nbsp;</label>
+                    <a class="btn secondario" href="/calendario">Torna al calendario</a>
+                </div>
+            </div>
+            <p class="testo-tenue">Scegli mese e anno, poi usa "Stampa / Salva PDF": nella finestra di stampa
+                del browser scegli "Salva come PDF" invece della stampante fisica.</p>
+        </div>
+    </main>
+</div>
+
+<div class="foglio-centralino">
+    <img th:if="${reportLogo}" th:src="${reportLogo}" class="logo-centralino" alt=""
+         onerror="this.style.display='none'">
+
+    <div class="riga-intestazione">
+        <div>
+            <div class="servizio-nome" th:text="${reportServizio}">Servizio Informatico e Tlc Area Nord</div>
+            <div class="oggetto" id="oggettoReport">Oggetto: Reperibilita mese di ...</div>
+        </div>
+        <div class="titolo-centralino">AL SERVIZIO DI CENTRALINO</div>
+    </div>
+
+    <p class="testo-esplicativo">
+        Si invia riepilogo mensile dei turni di reperibilita' del personale Servizio Informatico e telecomunicazioni.<br>
+        Si fa presente che le situazioni che comportano la necessita' di interpellare il personale del servizio sono
+        quelle che riguardano la continuita' dei collegamenti di rete tra sedi e la funzionalita' dei servizi di
+        importanza primaria (accettazione DEA e Pronto Soccorso, Radiologia, Laboratorio Analisi, SIT, ecc.).
+        Contattare <strong>sempre il Reperibile dell'informatica in prima istanza <u>per ogni problema informatico o
+        di telefonia.</u></strong><br>
+        <strong>Tutte le necessita' di interventi di ordinaria manutenzione dovranno essere comunicate soltanto nel
+        giorno lavorativo immediatamente successivo al turno di reperibilita'.</strong>
+    </p>
+
+    <table class="tabella-centralino">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th>Informatica</th>
+            <th>Telefonia</th>
+            <th colspan="2">Tel. Informatica</th>
+        </tr>
+        </thead>
+        <tbody id="corpoTabellaCentralino"></tbody>
+    </table>
+
+    <div class="firma-centralino">
+        <div class="spazio-firma"></div>
+        <div class="riga-firma" th:text="${reportFirmaRiga1}">Firma del Dirigente</div>
+    </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/js/stampa.js"></script>
+</body>
+</html>

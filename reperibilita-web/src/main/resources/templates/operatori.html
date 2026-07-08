@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' - Reperibilita'">Reperibilita</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav(${activePage})}"></div>
+
+<main>
+    <h1>Operatori</h1>
+    <div id="errore" class="messaggio-errore"></div>
+
+    <div class="card">
+        <div class="toolbar">
+            <div class="spacer"></div>
+            <button class="btn" id="btnNuovoOperatore">+ Nuovo operatore</button>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Codice</th>
+                <th>Cognome</th>
+                <th>Nome</th>
+                <th>Tel. aziendale</th>
+                <th>Tel. casa</th>
+                <th>Stato</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody id="corpoTabellaOperatori"></tbody>
+        </table>
+    </div>
+</main>
+
+<div class="modal-overlay" id="modaleOperatore">
+    <div class="modal">
+        <h2 id="modaleOperatoreTitolo">Nuovo operatore</h2>
+        <form id="formOperatore">
+            <input type="hidden" id="operatoreModifica">
+            <div class="modal-campo">
+                <label for="operatoreCodice">Codice (1-2 lettere)</label>
+                <input type="text" id="operatoreCodice" maxlength="2" required>
+            </div>
+            <div class="modal-campo">
+                <label for="operatoreCognome">Cognome</label>
+                <input type="text" id="operatoreCognome" required>
+            </div>
+            <div class="modal-campo">
+                <label for="operatoreNome">Nome</label>
+                <input type="text" id="operatoreNome" required>
+            </div>
+            <div class="modal-campo">
+                <label for="operatoreTelAz">Telefono aziendale</label>
+                <input type="tel" id="operatoreTelAz">
+            </div>
+            <div class="modal-campo">
+                <label for="operatoreTelCasa">Telefono casa</label>
+                <input type="tel" id="operatoreTelCasa">
+            </div>
+            <div class="modal-campo checkbox-riga">
+                <input type="checkbox" id="operatoreAttivo" checked>
+                <label for="operatoreAttivo">Attivo</label>
+            </div>
+            <div class="modal-azioni">
+                <button type="button" class="btn secondario" id="btnAnnullaOperatore">Annulla</button>
+                <button type="submit" class="btn">Salva</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/js/operatori.js"></script>
+</body>
+</html>

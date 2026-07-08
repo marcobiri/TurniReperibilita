@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' - Reperibilita'">Reperibilita</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav(${activePage})}"></div>
+
+<main>
+    <h1>Report compensi</h1>
+    <div id="errore" class="messaggio-errore"></div>
+
+    <div class="card">
+        <div class="toolbar">
+            <div>
+                <label for="repDal">Dal</label>
+                <input type="date" id="repDal">
+            </div>
+            <div>
+                <label for="repAl">Al</label>
+                <input type="date" id="repAl">
+            </div>
+            <div>
+                <label for="repOperatore">Operatore</label>
+                <select id="repOperatore"><option value="">Tutti</option></select>
+            </div>
+            <div class="spacer"></div>
+            <div>
+                <label>&nbsp;</label>
+                <button class="btn" id="btnCalcolaReport">Calcola</button>
+            </div>
+        </div>
+
+        <div class="totali-lista" id="totaliOperatori"></div>
+
+        <table style="margin-top:1.25rem">
+            <thead>
+            <tr>
+                <th>Data</th>
+                <th>Tipo turno</th>
+                <th>Operatore</th>
+                <th>Servizio</th>
+                <th>Importo</th>
+            </tr>
+            </thead>
+            <tbody id="corpoTabellaCompenso"></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Tariffa e maggiorazioni</h2>
+        <form id="formTariffa" class="toolbar">
+            <div>
+                <label for="tariffaImporto">Importo orario (EUR)</label>
+                <input type="number" id="tariffaImporto" step="0.01" min="0" required>
+            </div>
+            <div>
+                <label for="tariffaFestiva">Maggiorazione festiva (%)</label>
+                <input type="number" id="tariffaFestiva" step="1" min="0" required>
+            </div>
+            <div>
+                <label for="tariffaNotturna">Maggiorazione notturna (%)</label>
+                <input type="number" id="tariffaNotturna" step="1" min="0" required>
+            </div>
+            <div>
+                <label>&nbsp;</label>
+                <button type="submit" class="btn">Salva tariffa</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Abbinamenti operatori</h2>
+        <p class="testo-tenue">Coppie di operatori abbinate per il subentro/copertura reciproca.</p>
+        <div class="toolbar">
+            <div>
+                <label for="abbPrimo">Primo operatore</label>
+                <select id="abbPrimo"></select>
+            </div>
+            <div>
+                <label for="abbSecondo">Secondo operatore</label>
+                <select id="abbSecondo"></select>
+            </div>
+            <div>
+                <label>&nbsp;</label>
+                <button class="btn secondario" id="btnAggiungiAbbinamento">+ Aggiungi</button>
+            </div>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Primo operatore</th>
+                <th>Secondo operatore</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody id="corpoTabellaAbbinamenti"></tbody>
+        </table>
+    </div>
+</main>
+
+<script src="/js/common.js"></script>
+<script src="/js/report.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="nav(active)" class="topnav">
+    <div class="topnav-brand">
+        <span class="brand-dot"></span> Reperibilita
+    </div>
+    <div class="topnav-links">
+        <a href="/calendario" th:classappend="${active == 'calendario'} ? ' active'">Calendario</a>
+        <a href="/operatori" th:classappend="${active == 'operatori'} ? ' active'">Operatori</a>
+        <a href="/festivita" th:classappend="${active == 'festivita'} ? ' active'">Festivita</a>
+        <a href="/report" th:classappend="${active == 'report'} ? ' active'">Report</a>
+    </div>
+</nav>
+</body>
+</html>

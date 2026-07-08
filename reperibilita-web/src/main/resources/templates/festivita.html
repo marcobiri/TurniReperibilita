@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' - Reperibilita'">Reperibilita</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav(${activePage})}"></div>
+
+<main>
+    <h1>Festivita</h1>
+    <p class="testo-tenue">Le festivita' nazionali (comprese Pasqua e Pasquetta) vengono calcolate automaticamente
+        ogni anno. Puoi aggiungere festivita' personalizzate (es. patrono locale, chiusura aziendale) o rimuovere
+        una data se non vuoi che sia considerata festiva per l'assegnazione dei turni.</p>
+    <div id="errore" class="messaggio-errore"></div>
+
+    <div class="card">
+        <div class="toolbar">
+            <div>
+                <label for="selettoreAnno">Anno</label>
+                <select id="selettoreAnno"></select>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn" id="btnNuovaFestivita">+ Festivita personalizzata</button>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Data</th>
+                <th>Giorno</th>
+                <th>Descrizione</th>
+                <th>Origine</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody id="corpoTabellaFestivita"></tbody>
+        </table>
+    </div>
+</main>
+
+<div class="modal-overlay" id="modaleFestivita">
+    <div class="modal">
+        <h2>Nuova festivita personalizzata</h2>
+        <form id="formFestivita">
+            <div class="modal-campo">
+                <label for="festivitaData">Data</label>
+                <input type="date" id="festivitaData" required>
+            </div>
+            <div class="modal-campo">
+                <label for="festivitaDescrizione">Descrizione</label>
+                <input type="text" id="festivitaDescrizione" required placeholder="Es. San Feliciano">
+            </div>
+            <div class="modal-azioni">
+                <button type="button" class="btn secondario" id="btnAnnullaFestivita">Annulla</button>
+                <button type="submit" class="btn">Salva</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/js/festivita.js"></script>
+</body>
+</html>

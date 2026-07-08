@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' - Reperibilita'">Reperibilita</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav(${activePage})}"></div>
+
+<main>
+    <h1>Calendario turni</h1>
+    <div id="errore" class="messaggio-errore"></div>
+
+    <div class="card">
+        <div class="toolbar">
+            <div>
+                <label for="filtroServizio">Servizio</label>
+                <select id="filtroServizio">
+                    <option value="">Tutti</option>
+                    <option value="REPERIBILITA">Reperibilita generale</option>
+                    <option value="FONIA">Reperibilita fonia</option>
+                </select>
+            </div>
+            <div>
+                <label for="filtroOperatore">Operatore</label>
+                <select id="filtroOperatore">
+                    <option value="">Tutti</option>
+                </select>
+            </div>
+            <div class="spacer"></div>
+            <div>
+                <label>&nbsp;</label>
+                <button class="btn secondario" id="btnEsportaCsv">Esporta CSV</button>
+            </div>
+            <div>
+                <label>&nbsp;</label>
+                <button class="btn secondario" id="btnEsportaIcs">Esporta calendario (.ics)</button>
+            </div>
+            <div>
+                <label>&nbsp;</label>
+                <button class="btn" id="btnStampaPdf">Stampa / PDF per centralino</button>
+            </div>
+        </div>
+
+        <div id="calendar"></div>
+
+        <div class="legenda">
+            <span class="legenda-voce"><span class="legenda-pallino" style="background:#2563eb"></span> Reperibilita generale</span>
+            <span class="legenda-voce"><span class="legenda-pallino" style="background:#7c3aed"></span> Reperibilita fonia</span>
+            <span class="testo-tenue">Clicca su un giorno per assegnare un turno, clicca su un turno per modificarlo o rimuoverlo.</span>
+        </div>
+    </div>
+</main>
+
+<div class="modal-overlay" id="modaleTurno">
+    <div class="modal">
+        <h2 id="modaleTurnoTitolo">Assegna turno</h2>
+        <form id="formTurno">
+            <input type="hidden" id="turnoId">
+            <div class="modal-campo">
+                <label for="turnoData">Data</label>
+                <input type="date" id="turnoData" required>
+            </div>
+            <div class="modal-campo">
+                <label for="turnoServizio">Servizio</label>
+                <select id="turnoServizio" required>
+                    <option value="REPERIBILITA">Reperibilita generale</option>
+                    <option value="FONIA">Reperibilita fonia</option>
+                </select>
+            </div>
+            <div class="modal-campo">
+                <label for="turnoTipo">Tipo turno</label>
+                <select id="turnoTipo" required></select>
+            </div>
+            <div class="modal-campo">
+                <label for="turnoOperatore">Operatore</label>
+                <select id="turnoOperatore" required></select>
+            </div>
+            <div class="modal-azioni">
+                <button type="button" class="btn pericolo" id="btnEliminaTurno" style="display:none">Elimina</button>
+                <div class="spacer"></div>
+                <button type="button" class="btn secondario" id="btnAnnullaTurno">Annulla</button>
+                <button type="submit" class="btn">Salva</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/js/calendario.js"></script>
+</body>
+</html>
