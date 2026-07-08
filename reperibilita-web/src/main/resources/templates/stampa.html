@@ -43,6 +43,8 @@
             white-space: nowrap;
         }
         table.tabella-centralino th { text-align: center; font-weight: bold; padding: 0.15rem 0.35rem; }
+        table.tabella-centralino thead th { border: none; }
+        table.tabella-centralino thead th.bordata { border: 1px solid #000; }
         tr.riga-festiva td { font-weight: bold; }
         tr.riga-spaziatrice td { border: none; padding: 0.08rem 0; }
 
@@ -145,7 +147,7 @@
             <th></th>
             <th>Informatica</th>
             <th>Telefonia</th>
-            <th colspan="2">Tel. Informatica</th>
+            <th class="bordata" colspan="2">Tel. Informatica</th>
         </tr>
         </thead>
         <tbody id="corpoTabellaCentralino"></tbody>
