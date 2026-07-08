@@ -26,6 +26,12 @@ public class PageController {
     @Value("${report.firma-riga1}")
     private String reportFirmaRiga1;
 
+    @Value("${report.firma-riga2}")
+    private String reportFirmaRiga2;
+
+    @Value("${report.firma-riga3}")
+    private String reportFirmaRiga3;
+
     @GetMapping("/")
     public String home() {
         return "redirect:/calendario";
@@ -66,6 +72,8 @@ public class PageController {
         model.addAttribute("reportOrganizzazione", reportOrganizzazione);
         model.addAttribute("reportServizio", reportServizio);
         model.addAttribute("reportFirmaRiga1", reportFirmaRiga1);
+        model.addAttribute("reportFirmaRiga2", reportFirmaRiga2);
+        model.addAttribute("reportFirmaRiga3", reportFirmaRiga3);
         return "stampa";
     }
 }

@@ -39,8 +39,10 @@ import:
 report:
   logo: /images/logo.png
   organizzazione: USL Umbria2
-  servizio: Servizio Informatico e Tlc Area Nord
-  firma-riga1: Firma del Dirigente
+  servizio: Servizio Informatico e Telecomunicazioni
+  firma-riga1: Il Dirigente
+  firma-riga2: Servizio Informatico e Telecomunicazioni
+  firma-riga3: Ing. Alessio Cicioni
 
 logging:
   level:
