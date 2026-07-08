@@ -41,6 +41,7 @@ function inizializzaCalendario() {
         firstDay: 1,
         height: "auto",
         headerToolbar: {left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek"},
+        eventOrder: (a, b) => (a.servizio === b.servizio ? 0 : a.servizio === "REPERIBILITA" ? -1 : 1),
         events: caricaEventi,
         dateClick: (info) => apriModaleCreazione(info.dateStr),
         eventClick: (info) => apriModaleModifica(info.event)
