@@ -2,6 +2,8 @@ let calendar;
 let tipiTurno = [];
 let operatori = [];
 
+const ETICHETTA_SERVIZIO = {REPERIBILITA: "Reperibile Informatica", FONIA: "Reperibile fonia"};
+
 document.addEventListener("DOMContentLoaded", async () => {
     await Promise.all([caricaTipiTurno(), caricaOperatori()]);
     inizializzaCalendario();
@@ -50,6 +52,14 @@ function inizializzaCalendario() {
         // giorno: forziamo lo stile "block" per mantenere la barra colorata anche in vista mese.
         eventDisplay: "block",
         eventOrder: (a, b) => (a.servizio === b.servizio ? 0 : a.servizio === "REPERIBILITA" ? -1 : 1),
+        // Il testo dell'evento viene troncato quando la cella e' stretta: il title nativo del
+        // browser mostra per intero servizio, turno e operatore al passaggio del mouse.
+        eventDidMount: (info) => {
+            const etichetta = ETICHETTA_SERVIZIO[info.event.extendedProps.servizio] ?? "";
+            const operatore = operatori.find(o => o.codice === info.event.extendedProps.codiceOperatore);
+            const tipo = tipiTurno.find(t => t.id === info.event.extendedProps.tipoTurnoId);
+            info.el.title = `${operatore?.nomeCompleto ?? ""} - ${etichetta} - ${tipo?.nome ?? ""}`;
+        },
         events: caricaEventi,
         dateClick: (info) => apriModaleCreazione(info.dateStr),
         eventClick: (info) => apriModaleModifica(info.event)

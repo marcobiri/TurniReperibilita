@@ -1,4 +1,4 @@
-const NOME_SERVIZIO = {REPERIBILITA: "Reperibilita generale", FONIA: "Reperibilita fonia"};
+const NOME_SERVIZIO = {REPERIBILITA: "Reperibile Informatica", FONIA: "Reperibile fonia"};
 
 document.addEventListener("DOMContentLoaded", async () => {
     impostaDateDefault();
