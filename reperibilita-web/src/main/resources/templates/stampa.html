@@ -51,11 +51,16 @@
             text-align: right;
             padding-right: 1.5rem;
         }
+        .blocco-firma {
+            display: inline-block;
+            text-align: center;
+        }
         .spazio-firma {
             display: inline-block;
             width: 220px;
             height: 1.3rem;
             border-bottom: 1px solid #000;
+            margin-top: 0.4rem;
         }
         .riga-firma {
             font-weight: bold;
@@ -147,10 +152,12 @@
     </table>
 
     <div class="firma-centralino">
-        <div class="spazio-firma"></div>
-        <div class="riga-firma" th:text="${reportFirmaRiga1}">Il Dirigente</div>
-        <div class="riga-firma" th:text="${reportFirmaRiga2}">Servizio Informatico e Telecomunicazioni</div>
-        <div class="riga-firma" th:text="${reportFirmaRiga3}">Ing. Alessio Cicioni</div>
+        <div class="blocco-firma">
+            <div class="riga-firma" th:text="${reportFirmaRiga1}">Il Dirigente</div>
+            <div class="riga-firma" th:text="${reportFirmaRiga2}">Servizio Informatico e Telecomunicazioni</div>
+            <div class="riga-firma" th:text="${reportFirmaRiga3}">Ing. Alessio Cicioni</div>
+            <div class="spazio-firma"></div>
+        </div>
     </div>
 </div>
 
