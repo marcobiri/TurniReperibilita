@@ -20,6 +20,8 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
 
     Optional<Turno> findByDataAndTipoTurnoIdAndServizio(LocalDate data, Long tipoTurnoId, Servizio servizio);
 
+    List<Turno> findByServizioAndDataAfterOrderByDataDesc(Servizio servizio, LocalDate data);
+
     @Query("select t from Turno t where t.data = :data and t.operatore.codice = :codiceOperatore")
     List<Turno> findByDataAndOperatore(@Param("data") LocalDate data, @Param("codiceOperatore") String codiceOperatore);
 

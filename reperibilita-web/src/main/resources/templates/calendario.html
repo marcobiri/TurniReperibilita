@@ -33,6 +33,10 @@
             <div class="spacer"></div>
             <div>
                 <label>&nbsp;</label>
+                <button class="btn secondario" id="btnGeneraAnno">Genera turni anno</button>
+            </div>
+            <div>
+                <label>&nbsp;</label>
                 <button class="btn secondario" id="btnEsportaCsv">Esporta CSV</button>
             </div>
             <div>
@@ -86,6 +90,49 @@
                 <button type="submit" class="btn">Salva</button>
             </div>
         </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modaleGeneraAnno">
+    <div class="modal largo">
+        <h2>Genera turni anno</h2>
+        <div class="modal-campo">
+            <label for="generaAnno">Anno</label>
+            <input type="number" id="generaAnno" min="2000" max="2100">
+        </div>
+        <div class="modal-campo">
+            <label for="generaServizio">Servizio</label>
+            <select id="generaServizio">
+                <option value="">Tutti</option>
+                <option value="REPERIBILITA">Reperibile Informatica</option>
+                <option value="FONIA">Reperibile fonia</option>
+            </select>
+        </div>
+
+        <div id="generaAnnoRisultato" class="genera-anno-risultato" style="display:none">
+            <p id="generaAnnoRiepilogo" class="testo-tenue"></p>
+            <div class="genera-anno-tabella-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Servizio</th>
+                            <th>Turno</th>
+                            <th>Operatore</th>
+                            <th>Stato</th>
+                        </tr>
+                    </thead>
+                    <tbody id="generaAnnoTbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal-azioni">
+            <button type="button" class="btn secondario" id="btnAnnullaGeneraAnno">Annulla</button>
+            <div class="spacer"></div>
+            <button type="button" class="btn secondario" id="btnAnteprimaGeneraAnno">Genera anteprima</button>
+            <button type="button" class="btn" id="btnConfermaGeneraAnno" disabled>Conferma e salva</button>
+        </div>
     </div>
 </div>
 

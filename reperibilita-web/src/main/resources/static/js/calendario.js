@@ -95,6 +95,11 @@ function collegaEventi() {
     document.getElementById("btnEsportaCsv").addEventListener("click", () => esporta("csv"));
     document.getElementById("btnEsportaIcs").addEventListener("click", () => esporta("ics"));
     document.getElementById("btnStampaPdf").addEventListener("click", apriPaginaStampa);
+
+    document.getElementById("btnGeneraAnno").addEventListener("click", apriModaleGeneraAnno);
+    document.getElementById("btnAnnullaGeneraAnno").addEventListener("click", chiudiModaleGeneraAnno);
+    document.getElementById("btnAnteprimaGeneraAnno").addEventListener("click", caricaAnteprimaGenerazione);
+    document.getElementById("btnConfermaGeneraAnno").addEventListener("click", confermaGenerazione);
 }
 
 function apriPaginaStampa() {
@@ -153,6 +158,64 @@ async function eliminaTurno() {
         await Api.delete(`/api/turni/${id}`);
         chiudiModaleTurno();
         calendar.refetchEvents();
+    } catch (e) {
+        mostraErrore("errore", e);
+    }
+}
+
+let ultimaAnteprimaGenerazione = {anno: null, servizio: ""};
+
+function apriModaleGeneraAnno() {
+    document.getElementById("generaAnno").value = calendar.getDate().getFullYear() + 1;
+    document.getElementById("generaServizio").value = "";
+    document.getElementById("generaAnnoRisultato").style.display = "none";
+    document.getElementById("generaAnnoTbody").innerHTML = "";
+    document.getElementById("btnConfermaGeneraAnno").disabled = true;
+    document.getElementById("modaleGeneraAnno").classList.add("aperto");
+}
+
+function chiudiModaleGeneraAnno() {
+    document.getElementById("modaleGeneraAnno").classList.remove("aperto");
+}
+
+async function caricaAnteprimaGenerazione() {
+    try {
+        const anno = Number(document.getElementById("generaAnno").value);
+        const servizio = document.getElementById("generaServizio").value;
+        let url = `/api/turni/genera-anno/anteprima?anno=${anno}`;
+        if (servizio) url += `&servizio=${servizio}`;
+        const proposte = await Api.get(url);
+
+        const daCreare = proposte.filter(p => !p.giaEsistente);
+        document.getElementById("generaAnnoRiepilogo").textContent =
+            `${daCreare.length} turni da creare, ${proposte.length - daCreare.length} gia' presenti (non verranno modificati).`;
+
+        document.getElementById("generaAnnoTbody").innerHTML = proposte.map(p => `
+            <tr>
+                <td>${p.data}</td>
+                <td>${ETICHETTA_SERVIZIO[p.servizio] ?? p.servizio}</td>
+                <td>${p.nomeTipoTurno}</td>
+                <td>${p.nomeOperatore}</td>
+                <td>${p.giaEsistente ? '<span class="badge grigio">Gia\' presente</span>' : '<span class="badge verde">Nuovo</span>'}</td>
+            </tr>`).join("");
+
+        document.getElementById("generaAnnoRisultato").style.display = "block";
+        document.getElementById("btnConfermaGeneraAnno").disabled = daCreare.length === 0;
+        ultimaAnteprimaGenerazione = {anno, servizio};
+    } catch (e) {
+        mostraErrore("errore", e);
+    }
+}
+
+async function confermaGenerazione() {
+    try {
+        const {anno, servizio} = ultimaAnteprimaGenerazione;
+        let url = `/api/turni/genera-anno?anno=${anno}`;
+        if (servizio) url += `&servizio=${servizio}`;
+        const risultato = await Api.post(url, {});
+        chiudiModaleGeneraAnno();
+        calendar.refetchEvents();
+        alert(`Generati ${risultato.creati} turni per il ${risultato.anno} (${risultato.saltati} gia' presenti, non modificati).`);
     } catch (e) {
         mostraErrore("errore", e);
     }

@@ -3,12 +3,15 @@ package it.reperibilita.web.api;
 import it.reperibilita.domain.Servizio;
 import it.reperibilita.domain.Turno;
 import it.reperibilita.dto.CalendarEventoDTO;
+import it.reperibilita.dto.RisultatoGenerazioneDTO;
 import it.reperibilita.dto.TurnoDTO;
+import it.reperibilita.dto.TurnoPropostoDTO;
 import it.reperibilita.dto.TurnoRequest;
 import it.reperibilita.export.CsvTurnoExporter;
 import it.reperibilita.export.IcsTurnoExporter;
 import it.reperibilita.export.TurnoExporter;
 import it.reperibilita.mapper.TurnoMapper;
+import it.reperibilita.scheduling.GeneratoreTurniService;
 import it.reperibilita.scheduling.TurnoSearchCriteria;
 import it.reperibilita.scheduling.TurnoService;
 import jakarta.validation.Valid;
@@ -36,9 +39,11 @@ import java.util.List;
 public class TurnoRestController {
 
     private final TurnoService turnoService;
+    private final GeneratoreTurniService generatoreTurniService;
 
-    public TurnoRestController(TurnoService turnoService) {
+    public TurnoRestController(TurnoService turnoService, GeneratoreTurniService generatoreTurniService) {
         this.turnoService = turnoService;
+        this.generatoreTurniService = generatoreTurniService;
     }
 
     @GetMapping
@@ -69,6 +74,18 @@ public class TurnoRestController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void rimuovi(@PathVariable Long id) {
         turnoService.rimuovi(id);
+    }
+
+    @GetMapping("/genera-anno/anteprima")
+    public List<TurnoPropostoDTO> anteprimaGenerazioneAnno(@RequestParam int anno,
+                                                            @RequestParam(required = false) Servizio servizio) {
+        return generatoreTurniService.calcolaProposte(anno, servizio);
+    }
+
+    @PostMapping("/genera-anno")
+    public RisultatoGenerazioneDTO generaAnno(@RequestParam int anno,
+                                               @RequestParam(required = false) Servizio servizio) {
+        return generatoreTurniService.generaEPersisti(anno, servizio);
     }
 
     @GetMapping("/export.csv")
