@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Spring Boot 3.3.4 / Java 17 web app that replaces the legacy Access database `Turni.mdb` used by USL Umbria2 to manage on-call ("reperibilità") shift schedules for the IT/telecom service. Server-rendered Thymeleaf shells + vanilla JS calling a JSON REST API, backed by an embedded H2 file database.
+Spring Boot 3.3.4 web app that replaces the legacy Access database `Turni.mdb` used by USL Umbria2 to manage on-call ("reperibilità") shift schedules for the IT/telecom service. Server-rendered Thymeleaf shells + vanilla JS calling a JSON REST API, backed by an embedded H2 file database. Build/runtime uses Java 21, though `pom.xml` sets the compilation target (`java.version`) to 17.
 
 ## Commands
 
