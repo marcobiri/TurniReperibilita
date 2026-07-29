@@ -24,9 +24,10 @@ public final class TurnoMapper {
             fine = fine.plusDays(1);
         }
         String colore = colorePerServizio(turno.getServizio());
+        String coloreTesto = coloreTestoPerServizio(turno.getServizio());
         String titolo = turno.getTipoTurno().getNome() + " - " + turno.getOperatore().getNomeCompleto();
 
-        return new CalendarEventoDTO(turno.getId(), titolo, inizio, fine, colore,
+        return new CalendarEventoDTO(turno.getId(), titolo, inizio, fine, colore, coloreTesto,
                 turno.getServizio().name(), turno.getOperatore().getCodice(),
                 turno.getTipoTurno().getId(), turno.getTipoTurno().isFestivo());
     }
@@ -34,7 +35,16 @@ public final class TurnoMapper {
     private static String colorePerServizio(Servizio servizio) {
         return switch (servizio) {
             case REPERIBILITA -> "#2563eb";
-            case FONIA -> "#7c3aed";
+            case FONIA -> "#f5e08a"; // giallo pastello
+        };
+    }
+
+    // Sfondi chiari (es. il giallo pastello di FONIA) richiedono un testo scuro per restare leggibili;
+    // il blu di REPERIBILITA resta invece leggibile con il testo bianco di default di FullCalendar.
+    private static String coloreTestoPerServizio(Servizio servizio) {
+        return switch (servizio) {
+            case REPERIBILITA -> "#ffffff";
+            case FONIA -> "#7a5c00";
         };
     }
 }

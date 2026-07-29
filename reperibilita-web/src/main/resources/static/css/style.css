@@ -83,6 +83,12 @@ main {
     padding: 1.75rem;
 }
 
+/* Il calendario beneficia di celle piu' larghe: qui la pagina puo' usare piu' spazio
+   orizzontale rispetto alle altre viste (tabelle/moduli), che restano piu' strette per leggibilita'. */
+main.pagina-calendario {
+    max-width: 1600px;
+}
+
 h1 {
     font-size: 1.4rem;
     margin: 0 0 1.25rem;
@@ -318,6 +324,27 @@ tbody tr:hover {
 .fc-event {
     cursor: pointer;
     border: none;
+}
+
+/* Celle piu' ampie in vista mese/settimana: piu' spazio per leggere titolo turno e operatore
+   senza dover passare il mouse sul tooltip. */
+.fc .fc-daygrid-day-frame {
+    min-height: 135px;
+}
+
+.fc .fc-col-header-cell-cushion {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.85rem;
+}
+
+.fc .fc-daygrid-day-number {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.9rem;
+}
+
+.fc-event .fc-event-main {
+    padding: 0.15rem 0.35rem;
+    font-size: 0.82rem;
 }
 
 .legenda {
