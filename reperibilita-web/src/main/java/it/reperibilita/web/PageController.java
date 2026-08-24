@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 /**
  * Controller delle pagine Thymeleaf. Le pagine sono "gusci" pressoche' vuoti:
@@ -13,6 +14,11 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @Controller
 public class PageController {
+
+    // Timestamp di avvio, usato come query param di cache-busting sui link a /css e /js (vedi
+    // assetVersion() sotto): cambia ad ogni riavvio del server, cosi' il browser scarica sempre
+    // l'ultima versione di style.css/*.js dopo un aggiornamento, senza dover fare un refresh forzato.
+    private final long avvio = System.currentTimeMillis();
 
     @Value("${report.logo}")
     private String reportLogo;
@@ -31,6 +37,11 @@ public class PageController {
 
     @Value("${report.firma-riga3}")
     private String reportFirmaRiga3;
+
+    @ModelAttribute("assetVersion")
+    public long assetVersion() {
+        return avvio;
+    }
 
     @GetMapping("/")
     public String home() {

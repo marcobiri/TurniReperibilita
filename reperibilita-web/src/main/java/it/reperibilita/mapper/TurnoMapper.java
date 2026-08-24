@@ -6,6 +6,11 @@ import it.reperibilita.dto.CalendarEventoDTO;
 import it.reperibilita.dto.TurnoDTO;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class TurnoMapper {
 
@@ -29,7 +34,60 @@ public final class TurnoMapper {
 
         return new CalendarEventoDTO(turno.getId(), titolo, inizio, fine, colore, coloreTesto,
                 turno.getServizio().name(), turno.getOperatore().getCodice(),
-                turno.getTipoTurno().getId(), turno.getTipoTurno().isFestivo());
+                turno.getTipoTurno().getId(), turno.getTipoTurno().isFestivo(), null);
+    }
+
+    /**
+     * Come {@link #toEvento}, ma fonde in un'unica riga i turni diurno festivo e notturno festivo
+     * dello stesso giorno quando condividono operatore e servizio (es. un sabato: "Diurno festivo"
+     * 08-20 e "Notturno festivo" 20-08 dello stesso sabato, stesso operatore): sul calendario quel
+     * giorno mostra una sola riga per servizio, come un giorno feriale qualunque, invece delle due
+     * che ci sarebbero mostrando i due turni separatamente. Restano comunque due {@link Turno}
+     * distinti in database (nessuna modifica al modello dati) - l'evento fuso porta l'id del turno
+     * notturno in {@code idSecondario}, cosi' che modificare o eliminare l'unica riga agisca su
+     * entrambi (vedi {@code /api/turni/giornata} in TurnoRestController). Se invece giorno e notte
+     * dello stesso giorno festivo hanno operatori diversi, non si fondono: restano righe separate,
+     * per non perdere l'informazione di chi e' effettivamente in turno.
+     */
+    public static List<CalendarEventoDTO> toEventi(List<Turno> turni) {
+        Map<String, List<Turno>> gruppi = turni.stream()
+                .collect(Collectors.groupingBy(TurnoMapper::chiaveGruppoGiornata, LinkedHashMap::new, Collectors.toList()));
+
+        List<CalendarEventoDTO> eventi = new ArrayList<>();
+        for (List<Turno> gruppo : gruppi.values()) {
+            Turno diurno = trovaTurnoFestivo(gruppo, false);
+            Turno notturno = trovaTurnoFestivo(gruppo, true);
+            if (diurno != null && notturno != null) {
+                eventi.add(toEventoGiornata(diurno, notturno));
+            } else {
+                for (Turno turno : gruppo) {
+                    eventi.add(toEvento(turno));
+                }
+            }
+        }
+        return eventi;
+    }
+
+    private static String chiaveGruppoGiornata(Turno turno) {
+        return turno.getData() + "|" + turno.getOperatore().getCodice() + "|" + turno.getServizio();
+    }
+
+    private static Turno trovaTurnoFestivo(List<Turno> gruppo, boolean notturno) {
+        return gruppo.stream()
+                .filter(t -> t.getTipoTurno().isFestivo() && t.getTipoTurno().isNotturno() == notturno)
+                .findFirst().orElse(null);
+    }
+
+    private static CalendarEventoDTO toEventoGiornata(Turno diurno, Turno notturno) {
+        LocalDateTime inizio = diurno.getData().atTime(diurno.getTipoTurno().getOraInizio());
+        LocalDateTime fine = notturno.getData().plusDays(1).atTime(notturno.getTipoTurno().getOraFine());
+        String colore = colorePerServizio(diurno.getServizio());
+        String coloreTesto = coloreTestoPerServizio(diurno.getServizio());
+        String titolo = "Turno festivo - " + diurno.getOperatore().getNomeCompleto();
+
+        return new CalendarEventoDTO(diurno.getId(), titolo, inizio, fine, colore, coloreTesto,
+                diurno.getServizio().name(), diurno.getOperatore().getCodice(),
+                diurno.getTipoTurno().getId(), true, notturno.getId());
     }
 
     private static String colorePerServizio(Servizio servizio) {

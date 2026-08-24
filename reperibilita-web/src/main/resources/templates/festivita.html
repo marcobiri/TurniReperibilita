@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${pageTitle} + ' - Reperibilita'">Reperibilita</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=${assetVersion})}">
 </head>
 <body>
 <div th:replace="~{fragments/nav :: nav(${activePage})}"></div>
@@ -60,7 +60,7 @@
     </div>
 </div>
 
-<script src="/js/common.js"></script>
-<script src="/js/festivita.js"></script>
+<script th:src="@{/js/common.js(v=${assetVersion})}"></script>
+<script th:src="@{/js/festivita.js(v=${assetVersion})}"></script>
 </body>
 </html>

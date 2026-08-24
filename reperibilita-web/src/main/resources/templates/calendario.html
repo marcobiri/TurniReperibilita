@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${pageTitle} + ' - Reperibilita'">Reperibilita</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=${assetVersion})}">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 </head>
 <body>
@@ -37,6 +37,10 @@
             </div>
             <div>
                 <label>&nbsp;</label>
+                <button class="btn secondario" id="btnAssegnazioneMultipla" title="Trascina sul calendario per selezionare piu' giorni, oppure usa questo pulsante">Assegnazione multipla</button>
+            </div>
+            <div>
+                <label>&nbsp;</label>
                 <button class="btn secondario" id="btnEsportaCsv">Esporta CSV</button>
             </div>
             <div>
@@ -54,7 +58,7 @@
         <div class="legenda">
             <span class="legenda-voce"><span class="legenda-pallino" style="background:#2563eb"></span> Reperibile Informatica</span>
             <span class="legenda-voce"><span class="legenda-pallino" style="background:#f5e08a"></span> Reperibile fonia</span>
-            <span class="testo-tenue">Clicca su un giorno per assegnare un turno, clicca su un turno per modificarlo o rimuoverlo.</span>
+            <span class="testo-tenue">Clicca su un giorno per assegnare un turno, clicca su un turno per modificarlo o rimuoverlo. Trascina su piu' giorni per assegnarli tutti insieme. Nei giorni festivi, se lo stesso operatore copre sia il turno diurno che quello notturno, vengono mostrati come un'unica riga.</span>
         </div>
     </div>
 </main>
@@ -82,6 +86,10 @@
             <div class="modal-campo">
                 <label for="turnoOperatore">Operatore</label>
                 <select id="turnoOperatore" required></select>
+            </div>
+            <div class="modal-campo checkbox-riga" id="turnoGiornataRiga" style="display:none">
+                <input type="checkbox" id="turnoApplicaGiornata">
+                <label for="turnoApplicaGiornata" id="turnoGiornataEtichetta">Applica anche all'altro turno dello stesso giorno</label>
             </div>
             <div class="modal-azioni">
                 <button type="button" class="btn pericolo" id="btnEliminaTurno" style="display:none">Elimina</button>
@@ -111,7 +119,7 @@
 
         <div id="generaAnnoRisultato" class="genera-anno-risultato" style="display:none">
             <p id="generaAnnoRiepilogo" class="testo-tenue"></p>
-            <div class="genera-anno-tabella-wrapper">
+            <div class="tabella-risultato-wrapper">
                 <table>
                     <thead>
                         <tr>
@@ -136,7 +144,65 @@
     </div>
 </div>
 
-<script src="/js/common.js"></script>
-<script src="/js/calendario.js"></script>
+<div class="modal-overlay" id="modaleAssegnazioneMultipla">
+    <div class="modal largo">
+        <h2>Assegnazione multipla</h2>
+        <p class="testo-tenue">Assegna lo stesso turno e operatore a tutti i giorni di un intervallo. I giorni non compatibili con il tipo di turno scelto (es. un turno feriale su un weekend) verranno segnalati e saltati.</p>
+        <div class="modal-riga">
+            <div class="modal-campo">
+                <label for="multiploDal">Dal</label>
+                <input type="date" id="multiploDal" required>
+            </div>
+            <div class="modal-campo">
+                <label for="multiploAl">Al</label>
+                <input type="date" id="multiploAl" required>
+            </div>
+        </div>
+        <div class="modal-campo">
+            <label for="multiploServizio">Servizio</label>
+            <select id="multiploServizio" required>
+                <option value="REPERIBILITA">Reperibile Informatica</option>
+                <option value="FONIA">Reperibile fonia</option>
+            </select>
+        </div>
+        <div class="modal-campo">
+            <label for="multiploTipo">Tipo turno</label>
+            <select id="multiploTipo" required></select>
+        </div>
+        <div class="modal-campo">
+            <label for="multiploOperatore">Operatore</label>
+            <select id="multiploOperatore" required></select>
+        </div>
+        <div class="modal-campo checkbox-riga">
+            <input type="checkbox" id="multiploSovrascrivi">
+            <label for="multiploSovrascrivi">Sovrascrivi i giorni gia' assegnati</label>
+        </div>
+
+        <div id="multiploRisultato" class="genera-anno-risultato" style="display:none">
+            <p id="multiploRiepilogo" class="testo-tenue"></p>
+            <div class="tabella-risultato-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Stato</th>
+                            <th>Dettaglio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="multiploTbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal-azioni">
+            <button type="button" class="btn secondario" id="btnAnnullaMultiplo">Annulla</button>
+            <div class="spacer"></div>
+            <button type="button" class="btn" id="btnConfermaMultiplo">Assegna</button>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/common.js(v=${assetVersion})}"></script>
+<script th:src="@{/js/calendario.js(v=${assetVersion})}"></script>
 </body>
 </html>

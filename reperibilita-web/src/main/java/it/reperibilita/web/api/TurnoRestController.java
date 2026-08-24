@@ -4,7 +4,10 @@ import it.reperibilita.domain.Servizio;
 import it.reperibilita.domain.Turno;
 import it.reperibilita.dto.CalendarEventoDTO;
 import it.reperibilita.dto.RisultatoGenerazioneDTO;
+import it.reperibilita.dto.TurnoBatchEsitoDTO;
+import it.reperibilita.dto.TurnoBatchRequest;
 import it.reperibilita.dto.TurnoDTO;
+import it.reperibilita.dto.TurnoGiornataRequest;
 import it.reperibilita.dto.TurnoPropostoDTO;
 import it.reperibilita.dto.TurnoRequest;
 import it.reperibilita.export.CsvTurnoExporter;
@@ -59,7 +62,7 @@ public class TurnoRestController {
                                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate al,
                                            @RequestParam(required = false) Servizio servizio,
                                            @RequestParam(required = false) String operatore) {
-        return cercaTurni(dal, al, servizio, operatore).stream().map(TurnoMapper::toEvento).toList();
+        return TurnoMapper.toEventi(cercaTurni(dal, al, servizio, operatore));
     }
 
     @PostMapping
@@ -74,6 +77,30 @@ public class TurnoRestController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void rimuovi(@PathVariable Long id) {
         turnoService.rimuovi(id);
+    }
+
+    @PostMapping("/giornata")
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<TurnoDTO> assegnaGiornata(@Valid @RequestBody TurnoGiornataRequest request) {
+        Servizio servizio = Servizio.valueOf(request.servizio());
+        List<Turno> turni = turnoService.assegnaGiornata(request.data(), request.tipoTurnoDiurnoId(),
+                request.tipoTurnoNotturnoId(), request.codiceOperatore(), servizio);
+        return turni.stream().map(TurnoMapper::toDTO).toList();
+    }
+
+    @DeleteMapping("/giornata")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void rimuoviGiornata(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+                                 @RequestParam Long tipoTurnoDiurnoId, @RequestParam Long tipoTurnoNotturnoId,
+                                 @RequestParam Servizio servizio) {
+        turnoService.rimuoviGiornata(data, tipoTurnoDiurnoId, tipoTurnoNotturnoId, servizio);
+    }
+
+    @PostMapping("/batch")
+    public List<TurnoBatchEsitoDTO> assegnaIntervallo(@Valid @RequestBody TurnoBatchRequest request) {
+        Servizio servizio = Servizio.valueOf(request.servizio());
+        return turnoService.assegnaIntervallo(request.dal(), request.al(), request.tipoTurnoId(),
+                request.codiceOperatore(), servizio, request.sovrascrivi());
     }
 
     @GetMapping("/genera-anno/anteprima")
