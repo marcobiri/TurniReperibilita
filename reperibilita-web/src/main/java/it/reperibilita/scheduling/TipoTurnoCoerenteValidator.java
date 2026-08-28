@@ -11,7 +11,11 @@ import java.time.LocalDate;
  * Verifica che il tipo di turno scelto sia coerente con il calendario: un turno
  * marcato come "festivo" puo' essere assegnato solo in una data che e' davvero
  * festiva (festivita' nazionale/personalizzata oppure sabato/domenica), e viceversa
- * un turno feriale non puo' cadere in un giorno festivo.
+ * un turno feriale non puo' cadere in un giorno festivo. Questo vale anche per
+ * l'assegnazione multipla: {@link TurnoService#assegnaIntervallo} rimappa in automatico
+ * un turno feriale su sabato/domenica/festivi sulla coppia festiva (diurno+notturno)
+ * prima ancora di arrivare qui, cosi' da non dover mai violare questa regola ne'
+ * finire con due turni sovrapposti sulla stessa notte.
  */
 @Component
 @Order(2)

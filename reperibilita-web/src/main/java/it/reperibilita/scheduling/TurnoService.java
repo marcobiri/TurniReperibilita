@@ -5,6 +5,7 @@ import it.reperibilita.domain.Servizio;
 import it.reperibilita.domain.TipoTurno;
 import it.reperibilita.domain.Turno;
 import it.reperibilita.dto.TurnoBatchEsitoDTO;
+import it.reperibilita.holiday.HolidayService;
 import it.reperibilita.repository.OperatoreRepository;
 import it.reperibilita.repository.TipoTurnoRepository;
 import it.reperibilita.repository.TurnoRepository;
@@ -12,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +32,16 @@ public class TurnoService {
     private final OperatoreRepository operatoreRepository;
     private final TipoTurnoRepository tipoTurnoRepository;
     private final TurnoValidationChain validationChain;
+    private final HolidayService holidayService;
 
     public TurnoService(TurnoRepository turnoRepository, OperatoreRepository operatoreRepository,
-                         TipoTurnoRepository tipoTurnoRepository, TurnoValidationChain validationChain) {
+                         TipoTurnoRepository tipoTurnoRepository, TurnoValidationChain validationChain,
+                         HolidayService holidayService) {
         this.turnoRepository = turnoRepository;
         this.operatoreRepository = operatoreRepository;
         this.tipoTurnoRepository = tipoTurnoRepository;
         this.validationChain = validationChain;
+        this.holidayService = holidayService;
     }
 
     @Transactional(readOnly = true)
@@ -95,9 +100,15 @@ public class TurnoService {
     /**
      * Assegna lo stesso operatore/tipo turno a tutti i giorni di un intervallo (selezione multipla
      * sul calendario). A differenza di {@link #assegna}, non interrompe l'intero intervallo se un
-     * singolo giorno non e' valido (es. turno feriale su un giorno festivo): l'errore di validazione
-     * di quel giorno viene catturato e riportato singolarmente nell'esito, con lo stesso spirito
-     * tollerante di {@link GeneratoreTurniService}.
+     * singolo giorno non e' valido: l'errore di validazione di quel giorno viene catturato e
+     * riportato singolarmente nell'esito, con lo stesso spirito tollerante di
+     * {@link GeneratoreTurniService}.
+     * <p>
+     * Se il tipo turno scelto e' feriale ma un giorno dell'intervallo cade di sabato, domenica o
+     * festivita', quel giorno viene rimappato in automatico sulla coppia festiva (diurno+notturno,
+     * stesso operatore) invece di scrivere comunque il tipo feriale: assegnarlo alla lettera
+     * finirebbe per affiancare un turno feriale a quello festivo gia' presente quel giorno invece
+     * di sostituirlo, raddoppiando la reperibilita' sulla stessa notte.
      */
     @Transactional
     public List<TurnoBatchEsitoDTO> assegnaIntervallo(LocalDate dal, LocalDate al, Long tipoTurnoId,
@@ -110,20 +121,65 @@ public class TurnoService {
 
         List<TurnoBatchEsitoDTO> esiti = new ArrayList<>();
         for (LocalDate data = dal; !data.isAfter(al); data = data.plusDays(1)) {
-            Optional<Turno> esistente = turnoRepository.findByDataAndTipoTurnoIdAndServizio(data, tipoTurnoId, servizio);
-            if (esistente.isPresent() && !sovrascrivi) {
-                esiti.add(TurnoBatchEsitoDTO.saltato(data));
-                continue;
-            }
-            try {
-                boolean eraPresente = esistente.isPresent();
-                upsert(data, tipoTurno, operatore, servizio);
-                esiti.add(eraPresente ? TurnoBatchEsitoDTO.aggiornato(data) : TurnoBatchEsitoDTO.creato(data));
-            } catch (TurnoValidationException e) {
-                esiti.add(TurnoBatchEsitoDTO.errore(data, e.getMessage()));
+            if (!tipoTurno.isFestivo() && isFestivoOWeekend(data)) {
+                esiti.add(assegnaGiornoFestivoAutomatico(data, operatore, servizio, sovrascrivi));
+            } else {
+                esiti.add(assegnaGiornoSingolo(data, tipoTurno, operatore, servizio, sovrascrivi));
             }
         }
         return esiti;
+    }
+
+    private TurnoBatchEsitoDTO assegnaGiornoSingolo(LocalDate data, TipoTurno tipoTurno, Operatore operatore,
+                                                      Servizio servizio, boolean sovrascrivi) {
+        Optional<Turno> esistente = turnoRepository.findByDataAndTipoTurnoIdAndServizio(data, tipoTurno.getId(), servizio);
+        if (esistente.isPresent() && !sovrascrivi) {
+            return TurnoBatchEsitoDTO.saltato(data);
+        }
+        try {
+            boolean eraPresente = esistente.isPresent();
+            upsert(data, tipoTurno, operatore, servizio);
+            return eraPresente ? TurnoBatchEsitoDTO.aggiornato(data) : TurnoBatchEsitoDTO.creato(data);
+        } catch (TurnoValidationException e) {
+            return TurnoBatchEsitoDTO.errore(data, e.getMessage());
+        }
+    }
+
+    private TurnoBatchEsitoDTO assegnaGiornoFestivoAutomatico(LocalDate data, Operatore operatore, Servizio servizio,
+                                                                boolean sovrascrivi) {
+        TipoTurno diurno = tipoTurnoFestivoDiurno();
+        TipoTurno notturno = tipoTurnoFestivoNotturno();
+        boolean eraPresente = turnoRepository.findByDataAndTipoTurnoIdAndServizio(data, diurno.getId(), servizio).isPresent()
+                || turnoRepository.findByDataAndTipoTurnoIdAndServizio(data, notturno.getId(), servizio).isPresent();
+        if (eraPresente && !sovrascrivi) {
+            return TurnoBatchEsitoDTO.saltato(data);
+        }
+        try {
+            upsert(data, diurno, operatore, servizio);
+            upsert(data, notturno, operatore, servizio);
+            return eraPresente ? TurnoBatchEsitoDTO.aggiornato(data) : TurnoBatchEsitoDTO.creato(data);
+        } catch (TurnoValidationException e) {
+            return TurnoBatchEsitoDTO.errore(data, e.getMessage());
+        }
+    }
+
+    private boolean isFestivoOWeekend(LocalDate data) {
+        DayOfWeek giorno = data.getDayOfWeek();
+        return giorno == DayOfWeek.SATURDAY || giorno == DayOfWeek.SUNDAY || holidayService.isFestivo(data);
+    }
+
+    private TipoTurno tipoTurnoFestivoDiurno() {
+        return tipoTurnoRepository.findAll().stream()
+                .filter(t -> t.isFestivo() && !t.isNotturno())
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Nessun tipo turno festivo diurno configurato"));
+    }
+
+    private TipoTurno tipoTurnoFestivoNotturno() {
+        return tipoTurnoRepository.findAll().stream()
+                .filter(t -> t.isFestivo() && t.isNotturno())
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Nessun tipo turno festivo notturno configurato"));
     }
 
     @Transactional(readOnly = true)

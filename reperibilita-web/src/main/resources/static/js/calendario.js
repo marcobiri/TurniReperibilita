@@ -413,6 +413,7 @@ function apriModaleAssegnazioneMultipla(dalStr, alStr) {
     document.getElementById("multiploRisultato").style.display = "none";
     document.getElementById("multiploTbody").innerHTML = "";
     document.getElementById("btnAnnullaMultiplo").textContent = "Annulla";
+    document.getElementById("btnConfermaMultiplo").style.display = "inline-flex";
     document.getElementById("modaleAssegnazioneMultipla").classList.add("aperto");
 }
 
@@ -446,6 +447,7 @@ async function confermaAssegnazioneMultipla() {
             </tr>`).join("");
         document.getElementById("multiploRisultato").style.display = "block";
         document.getElementById("btnAnnullaMultiplo").textContent = "Chiudi";
+        document.getElementById("btnConfermaMultiplo").style.display = "none";
 
         calendar.refetchEvents();
     } catch (e) {
