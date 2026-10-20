@@ -34,15 +34,12 @@ import:
   mdb:
     path: ""
 
-# Testi dell'intestazione/firma del modulo di stampa per il centralino (vedi /stampa).
+# Testi dell'intestazione del modulo di stampa per il centralino (vedi /stampa).
 # Modificabili qui senza toccare il codice.
 report:
   logo: /images/logo.png
   organizzazione: USL Umbria2
   servizio: Servizio Informatico e Telecomunicazioni
-  firma-riga1: Il Dirigente
-  firma-riga2: Servizio Informatico e Telecomunicazioni
-  firma-riga3: Ing. Alessio Cicioni
 
 logging:
   level:
