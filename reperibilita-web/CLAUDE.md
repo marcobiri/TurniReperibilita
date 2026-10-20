@@ -49,4 +49,4 @@ Generates a full year of shifts by continuing the historical round-robin rather 
 
 ### Report/print customization
 
-Text shown on the printable centralino handoff form (`/stampa`) — organization name, signature lines, logo path — is configured under the `report:` key in `application.yml`, not hardcoded, and is injected via `PageController`.
+Text shown on the printable centralino handoff form (`/stampa`) — organization name, logo path — is configured under the `report:` key in `application.yml`, not hardcoded, and is injected via `PageController`.

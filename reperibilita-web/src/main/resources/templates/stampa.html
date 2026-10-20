@@ -48,28 +48,6 @@
         tr.riga-festiva td { font-weight: bold; }
         tr.riga-spaziatrice td { border: none; padding: 0.08rem 0; }
 
-        .firma-centralino {
-            margin-top: 1rem;
-            text-align: right;
-            padding-right: 1.5rem;
-        }
-        .blocco-firma {
-            display: inline-block;
-            text-align: center;
-        }
-        .spazio-firma {
-            display: inline-block;
-            width: 220px;
-            height: 1.3rem;
-            border-bottom: 1px solid #000;
-            margin-top: 0.4rem;
-        }
-        .riga-firma {
-            font-weight: bold;
-            font-size: 0.75rem;
-            margin-top: 0.2rem;
-        }
-
         @page {
             size: A4;
             margin: 0.9cm;
@@ -152,15 +130,6 @@
         </thead>
         <tbody id="corpoTabellaCentralino"></tbody>
     </table>
-
-    <div class="firma-centralino">
-        <div class="blocco-firma">
-            <div class="riga-firma" th:text="${reportFirmaRiga1}">Il Dirigente</div>
-            <div class="riga-firma" th:text="${reportFirmaRiga2}">Servizio Informatico e Telecomunicazioni</div>
-            <div class="riga-firma" th:text="${reportFirmaRiga3}">Ing. Alessio Cicioni</div>
-            <div class="spazio-firma"></div>
-        </div>
-    </div>
 </div>
 
 <script th:src="@{/js/common.js(v=${assetVersion})}"></script>
