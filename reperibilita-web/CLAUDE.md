@@ -50,3 +50,22 @@ Generates a full year of shifts by continuing the historical round-robin rather 
 ### Report/print customization
 
 Text shown on the printable centralino handoff form (`/stampa`) — organization name, logo path — is configured under the `report:` key in `application.yml`, not hardcoded, and is injected via `PageController`.
+
+## Procedura modifica e deploy in produzione
+
+1. **Sviluppo** con Claude Code.
+2. **Build e test in locale**:
+   - `mvn clean package -DskipTests`
+   - `java -jar target/reperibilita-web.jar` e verifica su `http://localhost:8080`
+3. **Push su GitHub**. Se fallisce dal pannello Claude Code, farlo dal terminale Local usando il Personal Access Token al posto della password.
+4. **Merge della Pull Request** su GitHub.
+5. **Deploy**: il server NON ha Maven, quindi il jar si costruisce in locale e si invia con:
+   ```
+   scp target/reperibilita-web.jar auslu2-appold-srv01:~/apps/turnireperibilita/reperibilita-web.jar
+   ```
+   poi sul server:
+   ```
+   systemctl --user restart turnireperibilita
+   systemctl --user status turnireperibilita
+   ```
+6. **Collaudo** su `http://172.31.244.3:8090/calendario`.
